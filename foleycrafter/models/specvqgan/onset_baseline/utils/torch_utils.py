@@ -10,7 +10,10 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
 sys.path.append('..')
-import data
+try:
+    import data
+except:
+    import foleycrafter.models.specvqgan.onset_baseline.data
 
 
 # ---------------------------------------------------- #
