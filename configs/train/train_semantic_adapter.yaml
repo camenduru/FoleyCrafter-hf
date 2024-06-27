@@ -1,0 +1,54 @@
+output_dir: "outputs"
+
+pretrained_model_path: ""
+
+motion_module_path: "models/mm_sd_v15_v2.ckpt"
+
+train_data:
+  csv_path: "./curated.csv"
+  audio_fps: 48000
+  audio_size: 480000
+
+validation_data:
+  prompts:
+    - "./data/input/lighthouse.png"
+    - "./data/input/guitar.png"
+    - "./data/input/lion.png"
+    - "./data/input/gun.png"
+  num_inference_steps: 25
+  guidance_scale: 7.5
+  sample_size: 512
+
+trainable_modules:
+  - 'to_k_ip'
+  - 'to_v_ip'
+
+audio_unet_checkpoint_path: ""
+
+learning_rate:    1.0e-4
+train_batch_size: 1 # max for mixed
+gradient_accumulation_steps: 1
+
+max_train_epoch:      -1
+max_train_steps:      200000
+checkpointing_epochs: 4000
+checkpointing_steps:  500
+
+validation_steps:       3000
+validation_steps_tuple: [2, 50, 300, 1000]
+
+global_seed: 42
+mixed_precision_training: true
+
+is_debug: False
+
+resume_ckpt: ""
+
+# params for adapter
+init_from_ip_adapter: false
+
+always_null_text: false
+
+reverse_null_text_prob: true
+
+frame_wise_condition: true
