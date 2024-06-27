@@ -1,6 +1,7 @@
 decord==0.6.0
 diffusers==0.25.1
 kornia==0.7.1
+h5py==3.7.0
 einops==0.7.0
 imageio==2.27.0
 ipdb==0.13.13
