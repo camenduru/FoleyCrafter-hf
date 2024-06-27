@@ -209,7 +209,7 @@ controller = FoleyController()
 def ui():
     with gr.Blocks(css=css) as demo:
         gr.HTML(
-            "<div align='center'><font size='6'>FoleyCrafter: Bring Silent Videos to Life with Lifelike and Synchronized Sounds</font></div>"
+            '<h1 style="height: 136px; display: flex; align-items: center; justify-content: space-around;"><span style="height: 100%; width:136px;"><img src="file/foleycrafter.png" alt="logo" style="height: 100%; width:auto; object-fit: contain; margin: 0px 0px; padding: 0px 0px;"></span><strong style="font-size: 40px;">FoleyCrafter: Bring Silent Videos to Life with Lifelike and Synchronized Sounds</strong></h1>'
         )
         with gr.Row():
             gr.Markdown(
@@ -273,4 +273,4 @@ def ui():
 if __name__ == "__main__":
     demo = ui()
     demo.queue(3)
-    demo.launch(server_name=args.server_name, server_port=args.port, share=args.share)
+    demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
