@@ -1,4 +1,7 @@
-from data import *
+try:
+    from data import *
+except:
+    from foleycrafter.models.specvqgan.onset_baseline.data import *
 import pdb
 from utils import sound, sourcesep
 import csv
