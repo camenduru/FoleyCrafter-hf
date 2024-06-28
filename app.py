@@ -69,7 +69,6 @@ class FoleyController:
         self.pipeline = None
 
         self.loaded = False
-
         self.load_model()
 
     def load_model(self):
