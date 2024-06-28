@@ -96,7 +96,8 @@ class FoleyController:
         # load time detector
         time_detector_ckpt = osp.join(osp.join(self.model_dir, 'timestamp_detector.pth.tar'))
         time_detector      = VideoOnsetNet(False)
-        self.time_detector, _   = torch_utils.load_model(time_detector_ckpt, time_detector, strict=True, device=self.device)
+        self.time_detector, _   = torch_utils.load_model(time_detector_ckpt, time_detector, strict=True)
+        self.time_detector = self.time_detector.to(self.device)
 
         self.pipeline = build_foleycrafter().to(self.device)
         ckpt = torch.load(temporal_ckpt_path)
