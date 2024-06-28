@@ -96,7 +96,6 @@ class FoleyController:
         time_detector_ckpt = osp.join(osp.join(self.model_dir, 'timestamp_detector.pth.tar'))
         time_detector      = VideoOnsetNet(False)
         self.time_detector, _   = torch_utils.load_model(time_detector_ckpt, time_detector, strict=True)
-        self.time_detector = self.time_detector
 
         self.pipeline = build_foleycrafter()
         ckpt = torch.load(temporal_ckpt_path)
@@ -204,81 +203,77 @@ class FoleyController:
         save_sample_path = os.path.join(self.savedir_sample, f"{name}.mp4")
 
         return save_sample_path 
+    
 
-def ui():
-    with gr.Blocks(css=css) as demo:
-        gr.HTML(
-            '<h1 style="height: 136px; display: flex; align-items: center; justify-content: space-around;"><span style="height: 100%; width:136px;"><img src="file/foleycrafter.png" alt="logo" style="height: 100%; width:auto; object-fit: contain; margin: 0px 0px; padding: 0px 0px;"></span><strong style="font-size: 40px;">FoleyCrafter: Bring Silent Videos to Life with Lifelike and Synchronized Sounds</strong></h1>'
+controller = FoleyController()
+device = "cuda" if torch.cuda.is_available() else "cpu" 
+
+# move to gpu
+controller.time_detector = controller.time_detector.to(device)
+controller.pipeline = controller.pipeline.to(device)
+controller.vocoder = controller.vocoder.to(device)
+controller.image_encoder = controller.image_encoder.to(device)
+
+with gr.Blocks(css=css) as demo:
+    gr.HTML(
+        '<h1 style="height: 136px; display: flex; align-items: center; justify-content: space-around;"><span style="height: 100%; width:136px;"><img src="file/foleycrafter.png" alt="logo" style="height: 100%; width:auto; object-fit: contain; margin: 0px 0px; padding: 0px 0px;"></span><strong style="font-size: 40px;">FoleyCrafter: Bring Silent Videos to Life with Lifelike and Synchronized Sounds</strong></h1>'
+    )
+    with gr.Row():
+        gr.Markdown(
+            "<div align='center'><font size='5'><a href='https://foleycrafter.github.io/'>Project Page</a> &ensp;"  # noqa
+            "<a href='https://arxiv.org/abs/xxxx.xxxxx/'>Paper</a> &ensp;"
+            "<a href='https://github.com/open-mmlab/foleycrafter'>Code</a> &ensp;"
+            "<a href='https://huggingface.co/spaces/ymzhang319/FoleyCrafter'>Demo</a> </font></div>"
         )
-        with gr.Row():
-            gr.Markdown(
-                "<div align='center'><font size='5'><a href='https://foleycrafter.github.io/'>Project Page</a> &ensp;"  # noqa
-                "<a href='https://arxiv.org/abs/xxxx.xxxxx/'>Paper</a> &ensp;"
-                "<a href='https://github.com/open-mmlab/foleycrafter'>Code</a> &ensp;"
-                "<a href='https://huggingface.co/spaces/ymzhang319/FoleyCrafter'>Demo</a> </font></div>"
-            )
 
-        with gr.Column(variant="panel"):
-            with gr.Row(equal_height=False):
-                with gr.Column():
-                    with gr.Row():
-                        init_img = gr.Video(label="Input Video")
-                    with gr.Row():
-                        prompt_textbox = gr.Textbox(value='', label="Prompt", lines=1)
-                    with gr.Row():
-                        negative_prompt_textbox = gr.Textbox(value=N_PROMPT, label="Negative prompt", lines=1)
+    with gr.Column(variant="panel"):
+        with gr.Row(equal_height=False):
+            with gr.Column():
+                with gr.Row():
+                    init_img = gr.Video(label="Input Video")
+                with gr.Row():
+                    prompt_textbox = gr.Textbox(value='', label="Prompt", lines=1)
+                with gr.Row():
+                    negative_prompt_textbox = gr.Textbox(value=N_PROMPT, label="Negative prompt", lines=1)
 
-                    with gr.Row():
-                        sampler_dropdown = gr.Dropdown(
-                            label="Sampling method",
-                            choices=list(scheduler_dict.keys()),
-                            value=list(scheduler_dict.keys())[0],
-                        )
-                        sample_step_slider = gr.Slider(
-                            label="Sampling steps", value=25, minimum=10, maximum=100, step=1
-                        )
+                with gr.Row():
+                    sampler_dropdown = gr.Dropdown(
+                        label="Sampling method",
+                        choices=list(scheduler_dict.keys()),
+                        value=list(scheduler_dict.keys())[0],
+                    )
+                    sample_step_slider = gr.Slider(
+                        label="Sampling steps", value=25, minimum=10, maximum=100, step=1
+                    )
 
-                    cfg_scale_slider = gr.Slider(label="CFG Scale", value=7.5, minimum=0, maximum=20)
-                    ip_adapter_scale = gr.Slider(label="Visual Content Scale", value=1.0, minimum=0, maximum=1)
-                    temporal_scale = gr.Slider(label="Temporal Align Scale", value=0., minimum=0., maximum=1.0)
+                cfg_scale_slider = gr.Slider(label="CFG Scale", value=7.5, minimum=0, maximum=20)
+                ip_adapter_scale = gr.Slider(label="Visual Content Scale", value=1.0, minimum=0, maximum=1)
+                temporal_scale = gr.Slider(label="Temporal Align Scale", value=0., minimum=0., maximum=1.0)
 
-                    with gr.Row():
-                        seed_textbox = gr.Textbox(label="Seed", value=42)
-                        seed_button = gr.Button(value="\U0001f3b2", elem_classes="toolbutton")
-                    seed_button.click(fn=lambda x: random.randint(1, 1e8), outputs=[seed_textbox], queue=False)
+                with gr.Row():
+                    seed_textbox = gr.Textbox(label="Seed", value=42)
+                    seed_button = gr.Button(value="\U0001f3b2", elem_classes="toolbutton")
+                seed_button.click(fn=lambda x: random.randint(1, 1e8), outputs=[seed_textbox], queue=False)
 
-                    generate_button = gr.Button(value="Generate", variant="primary")
+                generate_button = gr.Button(value="Generate", variant="primary")
 
-                result_video = gr.Video(label="Generated Audio", interactive=False)
+            result_video = gr.Video(label="Generated Audio", interactive=False)
 
-            generate_button.click(
-                fn=controller.foley,
-                inputs=[
-                    init_img,
-                    prompt_textbox,
-                    negative_prompt_textbox,
-                    ip_adapter_scale,
-                    temporal_scale,
-                    sampler_dropdown,
-                    sample_step_slider,
-                    cfg_scale_slider,
-                    seed_textbox,
-                ],
-                outputs=[result_video],
-            )
+        generate_button.click(
+            fn=controller.foley,
+            inputs=[
+                init_img,
+                prompt_textbox,
+                negative_prompt_textbox,
+                ip_adapter_scale,
+                temporal_scale,
+                sampler_dropdown,
+                sample_step_slider,
+                cfg_scale_slider,
+                seed_textbox,
+            ],
+            outputs=[result_video],
+        )
 
-    return demo
-
-if __name__ == "__main__": 
-    controller = FoleyController()
-    device = "cuda" if torch.cuda.is_available() else "cpu" 
-
-    # move to gpu
-    controller.time_detector = controller.time_detector.to(device)
-    controller.pipeline = controller.pipeline.to(device)
-    controller.vocoder = controller.vocoder.to(device)
-    controller.image_encoder = controller.image_encoder.to(device)
-
-    demo = ui()
     demo.queue(10)
     demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
