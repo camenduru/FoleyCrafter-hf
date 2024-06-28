@@ -130,7 +130,7 @@ class FoleyController:
         prompt_textbox,
         negative_prompt_textbox, 
         ip_adapter_scale,
-        temporal_scale,
+        # temporal_scale,
         sampler_dropdown,
         sample_step_slider,
         cfg_scale_slider,
@@ -154,7 +154,7 @@ class FoleyController:
         if seed_textbox != "":
             torch.manual_seed(int(seed_textbox))
             generator.manual_seed(int(seed_textbox))
-        max_frame_nums = 30
+        max_frame_nums = 15
         frames, duration  = read_frames_with_moviepy(input_video, max_frame_nums=max_frame_nums)
         if duration >= 10:
             duration = 10
@@ -181,7 +181,7 @@ class FoleyController:
             negative_prompt=negative_prompt_textbox,
             ip_adapter_image_embeds=image_embeddings,
             image=time_condition,
-            controlnet_conditioning_scale=float(temporal_scale),
+            controlnet_conditioning_scale=float(0),
             num_inference_steps=sample_step_slider,
             height=256,
             width=1024,
@@ -247,7 +247,7 @@ with gr.Blocks(css=css) as demo:
 
                 cfg_scale_slider = gr.Slider(label="CFG Scale", value=7.5, minimum=0, maximum=20)
                 ip_adapter_scale = gr.Slider(label="Visual Content Scale", value=1.0, minimum=0, maximum=1)
-                temporal_scale = gr.Slider(label="Temporal Align Scale", value=0., minimum=0., maximum=1.0)
+                # temporal_scale = gr.Slider(label="Temporal Align Scale", value=0., minimum=0., maximum=1.0)
 
                 with gr.Row():
                     seed_textbox = gr.Textbox(label="Seed", value=42)
@@ -265,7 +265,7 @@ with gr.Blocks(css=css) as demo:
                 prompt_textbox,
                 negative_prompt_textbox,
                 ip_adapter_scale,
-                temporal_scale,
+                # temporal_scale,
                 sampler_dropdown,
                 sample_step_slider,
                 cfg_scale_slider,
@@ -276,13 +276,13 @@ with gr.Blocks(css=css) as demo:
 
         gr.Examples(
             examples= [
-                ['examples/videos/51701454.mp4', 'seagulls', '', 1.0, 0.0, 'DDIM', 25, 7.5, 10014024412012338096],
-                ['examples/videos/42.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 42],
-                ['examples/videos/1.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 93493458],
-                ['examples/videos/2.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 51972214],
-                ['examples/videos/3.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 92530687], 
+                ['examples/videos/51701454.mp4', 'seagulls', '', 1.0, 'DDIM', 25, 7.5, 10014024412012338096],
+                ['examples/videos/42.mp4', '', '', 1.0, 'DDIM', 25, 7.5, 42],
+                ['examples/videos/1.mp4', '', '', 1.0, 'DDIM', 25, 7.5, 93493458],
+                ['examples/videos/2.mp4', '', '', 1.0, 'DDIM', 25, 7.5, 51972214],
+                ['examples/videos/3.mp4', '', '', 1.0, 'DDIM', 25, 7.5, 92530687], 
             ],
-            inputs=[init_img,prompt_textbox,negative_prompt_textbox,ip_adapter_scale,temporal_scale,sampler_dropdown,sample_step_slider,cfg_scale_slider,seed_textbox],
+            inputs=[init_img,prompt_textbox,negative_prompt_textbox,ip_adapter_scale,sampler_dropdown,sample_step_slider,cfg_scale_slider,seed_textbox],
         )
             
     demo.queue(10)
