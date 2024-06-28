@@ -69,6 +69,7 @@ class FoleyController:
         self.pipeline = None
 
         self.loaded = False
+
         self.load_model()
 
     def load_model(self):
@@ -137,7 +138,7 @@ class FoleyController:
         sample_step_slider,
         cfg_scale_slider,
         seed_textbox, 
-    ): 
+    ):
         # move to gpu
         self.time_detector.to(self.device)
         self.pipeline.to(self.device)
@@ -150,8 +151,8 @@ class FoleyController:
             torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ]
         video_transform = torchvision.transforms.Compose(vision_transform_list)
-        if not self.loaded:
-            raise gr.Error("Error with loading model")
+        # if not self.loaded:
+        #     raise gr.Error("Error with loading model")
         generator  = torch.Generator()
         if seed_textbox != "":
             torch.manual_seed(int(seed_textbox))
