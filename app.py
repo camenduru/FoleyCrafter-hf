@@ -64,8 +64,6 @@ class FoleyController:
         self.savedir_sample = os.path.join(self.savedir, "sample")
         os.makedirs(self.savedir, exist_ok=True)
 
-        self.device = "cuda"
-
         self.pipeline = None
 
         self.loaded = False
@@ -118,13 +116,7 @@ class FoleyController:
         self.image_processor      = CLIPImageProcessor()
         self.image_encoder        = CLIPVisionModelWithProjection.from_pretrained('h94/IP-Adapter', subfolder='models/image_encoder')
 
-        self.pipeline.load_ip_adapter(fc_ckpt, subfolder='semantic', weight_name='semantic_adapter.bin', image_encoder_folder=None)
-
-        # move to gpu
-        self.time_detector = self.time_detector.to(self.device)
-        self.pipeline = self.pipeline.to(self.device)
-        self.vocoder = self.vocoder.to(self.device)
-        self.image_encoder = self.image_encoder.to(self.device)
+        self.pipeline.load_ip_adapter(fc_ckpt, subfolder='semantic', weight_name='semantic_adapter.bin', image_encoder_folder=None) 
 
         gr.Info("Load Finish!")
         print("Load Finish!")
@@ -212,8 +204,6 @@ class FoleyController:
         save_sample_path = os.path.join(self.savedir_sample, f"{name}.mp4")
 
         return save_sample_path 
-    
-controller = FoleyController()
 
 def ui():
     with gr.Blocks(css=css) as demo:
@@ -280,6 +270,15 @@ def ui():
     return demo
 
 if __name__ == "__main__": 
+    controller = FoleyController()
+    device = "cuda" if torch.cuda.is_available() else "cpu" 
+
+    # move to gpu
+    controller.time_detector = controller.time_detector.to(device)
+    controller.pipeline = controller.pipeline.to(device)
+    controller.vocoder = controller.vocoder.to(device)
+    controller.image_encoder = controller.image_encoder.to(device)
+
     demo = ui()
     demo.queue(10)
     demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
