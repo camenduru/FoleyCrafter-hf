@@ -138,10 +138,10 @@ class FoleyController:
     ): 
         device = 'cuda'
         # move to gpu
-        controller.time_detector = controller.time_detector.to(device)
-        controller.pipeline = controller.pipeline.to(device)
-        controller.vocoder = controller.vocoder.to(device)
-        controller.image_encoder = controller.image_encoder.to(device)
+        self.time_detector = controller.time_detector.to(device)
+        self.pipeline = controller.pipeline.to(device)
+        self.vocoder = controller.vocoder.to(device)
+        self.image_encoder = controller.image_encoder.to(device)
         vision_transform_list = [
             torchvision.transforms.Resize((128, 128)),
             torchvision.transforms.CenterCrop((112, 112)),
