@@ -72,6 +72,7 @@ class FoleyController:
 
         self.load_model()
 
+    @spaces.GPU
     def load_model(self):
         gr.Info("Start Load Models...")
         print("Start Load Models...")
