@@ -274,4 +274,4 @@ def ui():
 if __name__ == "__main__": 
     demo = ui()
     demo.queue(10)
-    demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
+    demo.launch(server_name=args.server_name, server_port=args.port, share=True, allowed_paths=["./foleycrafter.png"])
