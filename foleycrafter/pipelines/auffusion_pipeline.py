@@ -317,7 +317,7 @@ class Generator(torch.nn.Module):
         config  = get_config(config_path)
         vocoder = cls(config)
 
-        state_dict_g = torch.load(ckpt_path)
+        state_dict_g = torch.load(ckpt_path, map_location="cpu")
         vocoder.load_state_dict(state_dict_g["generator"])
         vocoder.eval()
         vocoder.remove_weight_norm()

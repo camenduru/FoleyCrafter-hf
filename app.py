@@ -203,6 +203,8 @@ class FoleyController:
         save_sample_path = os.path.join(self.savedir_sample, f"{name}.mp4")
 
         return save_sample_path 
+    
+controller = FoleyController()
 
 def ui():
     with gr.Blocks(css=css) as demo:
@@ -268,8 +270,7 @@ def ui():
 
     return demo
 
-if __name__ == "__main__":
-    controller = FoleyController()
+if __name__ == "__main__": 
     demo = ui()
-    demo.queue(3)
+    demo.queue(10)
     demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
