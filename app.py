@@ -154,7 +154,7 @@ class FoleyController:
         if seed_textbox != "":
             torch.manual_seed(int(seed_textbox))
             generator.manual_seed(int(seed_textbox))
-        max_frame_nums = 15
+        max_frame_nums = 150
         frames, duration  = read_frames_with_moviepy(input_video, max_frame_nums=max_frame_nums)
         if duration >= 10:
             duration = 10
@@ -274,5 +274,13 @@ with gr.Blocks(css=css) as demo:
             outputs=[result_video],
         )
 
+        gr.Examples(
+            examples= [
+                ['examples/videos/1.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 93493458],
+                ['examples/videos/2.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 51972214],
+            ],
+            inputs=[init_img,prompt_textbox,negative_prompt_textbox,ip_adapter_scale,temporal_scale,sampler_dropdown,sample_step_slider,cfg_scale_slider,seed_textbox],
+        )
+            
     demo.queue(10)
     demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
