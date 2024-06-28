@@ -276,6 +276,8 @@ with gr.Blocks(css=css) as demo:
 
         gr.Examples(
             examples= [
+                ['examples/videos/51701454.mp4', 'seagulls', '', 1.0, 0.0, 'DDIM', 25, 7.5, 10014024412012338096],
+                ['examples/videos/42.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 42],
                 ['examples/videos/1.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 93493458],
                 ['examples/videos/2.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 51972214],
                 ['examples/videos/3.mp4', '', '', 1.0, 0.0, 'DDIM', 25, 7.5, 92530687], 
