@@ -72,7 +72,6 @@ class FoleyController:
 
         self.load_model()
 
-    @spaces.GPU
     def load_model(self):
         gr.Info("Start Load Models...")
         print("Start Load Models...")
@@ -93,15 +92,15 @@ class FoleyController:
         vocoder_config_path= "./models/auffusion"
         self.vocoder       = Generator.from_pretrained(
                         vocoder_config_path, 
-                        subfolder="vocoder").to(self.device)
+                        subfolder="vocoder")
         
         # load time detector
         time_detector_ckpt = osp.join(osp.join(self.model_dir, 'timestamp_detector.pth.tar'))
         time_detector      = VideoOnsetNet(False)
         self.time_detector, _   = torch_utils.load_model(time_detector_ckpt, time_detector, strict=True)
-        self.time_detector = self.time_detector.to(self.device)
+        self.time_detector = self.time_detector
 
-        self.pipeline = build_foleycrafter().to(self.device)
+        self.pipeline = build_foleycrafter()
         ckpt = torch.load(temporal_ckpt_path)
 
         # load temporal adapter
@@ -117,7 +116,7 @@ class FoleyController:
         print(f"### Control Net missing keys: {len(m)}; \n### unexpected keys: {len(u)};") 
 
         self.image_processor      = CLIPImageProcessor()
-        self.image_encoder        = CLIPVisionModelWithProjection.from_pretrained('h94/IP-Adapter', subfolder='models/image_encoder').to(self.device)
+        self.image_encoder        = CLIPVisionModelWithProjection.from_pretrained('h94/IP-Adapter', subfolder='models/image_encoder')
 
         self.pipeline.load_ip_adapter(fc_ckpt, subfolder='semantic', weight_name='semantic_adapter.bin', image_encoder_folder=None)
 
@@ -140,7 +139,12 @@ class FoleyController:
         cfg_scale_slider,
         seed_textbox, 
     ):
-        
+        # move to gpu
+        self.time_detector = self.time_detector.to(self.device)
+        self.pipeline = self.pipeline.to(self.device)
+        self.vocoder = self.vocoder.to(self.device)
+        self.image_encoder = self.image_encoder.to(self.device)
+
         vision_transform_list = [
             torchvision.transforms.Resize((128, 128)),
             torchvision.transforms.CenterCrop((112, 112)),
