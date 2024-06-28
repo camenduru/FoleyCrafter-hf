@@ -3,7 +3,6 @@ import torchvision
 
 import os
 import os.path as osp
-import spaces
 import random
 from argparse import ArgumentParser
 from datetime import datetime
@@ -123,7 +122,6 @@ class FoleyController:
 
         return "Load"
 
-    @spaces.GPU
     def foley(
         self,
         input_video,
@@ -213,7 +211,7 @@ class FoleyController:
 controller = FoleyController()
 device = "cuda" if torch.cuda.is_available() else "cpu" 
 
-with gr.Blocks(css=css) as demo:
+with gr.Blocks(css=css, analytics_enabled=False) as demo:
     gr.HTML(
         '<h1 style="height: 136px; display: flex; align-items: center; justify-content: space-around;"><span style="height: 100%; width:136px;"><img src="file/foleycrafter.png" alt="logo" style="height: 100%; width:auto; object-fit: contain; margin: 0px 0px; padding: 0px 0px;"></span><strong style="font-size: 40px;">FoleyCrafter: Bring Silent Videos to Life with Lifelike and Synchronized Sounds</strong></h1>'
     )
@@ -284,5 +282,6 @@ with gr.Blocks(css=css) as demo:
             inputs=[init_img,prompt_textbox,negative_prompt_textbox,ip_adapter_scale,sampler_dropdown,sample_step_slider,cfg_scale_slider,seed_textbox],
         )
             
-    demo.queue(10)
-    demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
+    # demo.queue(10)
+    # demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
+    app.queue().launch(share=True)
