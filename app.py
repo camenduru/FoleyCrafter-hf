@@ -140,10 +140,10 @@ class FoleyController:
         seed_textbox, 
     ):
         # move to gpu
-        self.time_detector = self.time_detector.to(self.device)
-        self.pipeline = self.pipeline.to(self.device)
-        self.vocoder = self.vocoder.to(self.device)
-        self.image_encoder = self.image_encoder.to(self.device)
+        self.time_detector.to(self.device)
+        self.pipeline.to(self.device)
+        self.vocoder.to(self.device)
+        self.image_encoder.to(self.device)
 
         vision_transform_list = [
             torchvision.transforms.Resize((128, 128)),
@@ -161,7 +161,7 @@ class FoleyController:
         frames, duration  = read_frames_with_moviepy(input_video, max_frame_nums=max_frame_nums)
         if duration >= 10:
             duration = 10
-        time_frames = torch.FloatTensor(frames).permute(0, 3, 1, 2)
+        time_frames = torch.FloatTensor(frames).permute(0, 3, 1, 2).to(self.device)
         time_frames = video_transform(time_frames)
         time_frames = {'frames': time_frames.unsqueeze(0).permute(0, 2, 1, 3, 4)}
         preds       = self.time_detector(time_frames)
