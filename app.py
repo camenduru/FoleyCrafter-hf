@@ -204,8 +204,6 @@ class FoleyController:
 
         return save_sample_path 
 
-controller = FoleyController()
-
 def ui():
     with gr.Blocks(css=css) as demo:
         gr.HTML(
@@ -271,6 +269,7 @@ def ui():
     return demo
 
 if __name__ == "__main__":
+    controller = FoleyController()
     demo = ui()
     demo.queue(3)
     demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
