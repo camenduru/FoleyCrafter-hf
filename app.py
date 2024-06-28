@@ -64,7 +64,7 @@ class FoleyController:
         self.savedir_sample = os.path.join(self.savedir, "sample")
         os.makedirs(self.savedir, exist_ok=True)
 
-        self.device = "cuda"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.pipeline = None
 
@@ -140,10 +140,10 @@ class FoleyController:
         seed_textbox, 
     ):
         # move to gpu
-        self.time_detector.to(self.device)
-        self.pipeline.to(self.device)
-        self.vocoder.to(self.device)
-        self.image_encoder.to(self.device)
+        self.time_detector = self.time_detector.to(self.device)
+        self.pipeline = self.pipeline.to(self.device)
+        self.vocoder = self.vocoder.to(self.device)
+        self.image_encoder = self.image_encoder.to(self.device)
 
         vision_transform_list = [
             torchvision.transforms.Resize((128, 128)),
