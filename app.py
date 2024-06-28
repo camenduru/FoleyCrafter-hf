@@ -120,11 +120,7 @@ class FoleyController:
 
         self.pipeline.load_ip_adapter(fc_ckpt, subfolder='semantic', weight_name='semantic_adapter.bin', image_encoder_folder=None)
 
-        # move to gpu
-        self.time_detector.to(self.device)
-        self.pipeline.to(self.device)
-        self.vocoder.to(self.device)
-        self.image_encoder.to(self.device)
+        self.move_to_device()
 
         gr.Info("Load Finish!")
         print("Load Finish!")
@@ -145,14 +141,20 @@ class FoleyController:
         cfg_scale_slider,
         seed_textbox, 
     ): 
+        # move to gpu
+        self.time_detector.to(self.device)
+        self.pipeline.to(self.device)
+        self.vocoder.to(self.device)
+        self.image_encoder.to(self.device)
+
         vision_transform_list = [
             torchvision.transforms.Resize((128, 128)),
             torchvision.transforms.CenterCrop((112, 112)),
             torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ]
         video_transform = torchvision.transforms.Compose(vision_transform_list)
-        # if not self.loaded:
-        #     raise gr.Error("Error with loading model")
+        if not self.loaded:
+            raise gr.Error("Error with loading model")
         generator  = torch.Generator()
         if seed_textbox != "":
             torch.manual_seed(int(seed_textbox))
