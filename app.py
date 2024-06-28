@@ -136,7 +136,12 @@ class FoleyController:
         cfg_scale_slider,
         seed_textbox, 
     ): 
-
+        device = 'cuda'
+        # move to gpu
+        controller.time_detector = controller.time_detector.to(device)
+        controller.pipeline = controller.pipeline.to(device)
+        controller.vocoder = controller.vocoder.to(device)
+        controller.image_encoder = controller.image_encoder.to(device)
         vision_transform_list = [
             torchvision.transforms.Resize((128, 128)),
             torchvision.transforms.CenterCrop((112, 112)),
@@ -153,7 +158,7 @@ class FoleyController:
         frames, duration  = read_frames_with_moviepy(input_video, max_frame_nums=max_frame_nums)
         if duration >= 10:
             duration = 10
-        time_frames = torch.FloatTensor(frames).permute(0, 3, 1, 2).to('cuda')
+        time_frames = torch.FloatTensor(frames).permute(0, 3, 1, 2).to(device)
         time_frames = video_transform(time_frames)
         time_frames = {'frames': time_frames.unsqueeze(0).permute(0, 2, 1, 3, 4)}
         preds       = self.time_detector(time_frames)
@@ -165,7 +170,7 @@ class FoleyController:
         # w -> b c h w
         time_condition = torch.FloatTensor(time_condition).unsqueeze(0).unsqueeze(0).unsqueeze(0).repeat(1, 1, 256, 1)
         
-        images = self.image_processor(images=frames, return_tensors="pt").to('cuda')
+        images = self.image_processor(images=frames, return_tensors="pt").to(device)
         image_embeddings = self.image_encoder(**images).image_embeds
         image_embeddings = torch.mean(image_embeddings, dim=0, keepdim=True).unsqueeze(0).unsqueeze(0)
         neg_image_embeddings = torch.zeros_like(image_embeddings)
@@ -207,12 +212,6 @@ class FoleyController:
 
 controller = FoleyController()
 device = "cuda" if torch.cuda.is_available() else "cpu" 
-
-# move to gpu
-controller.time_detector = controller.time_detector.to(device)
-controller.pipeline = controller.pipeline.to(device)
-controller.vocoder = controller.vocoder.to(device)
-controller.image_encoder = controller.image_encoder.to(device)
 
 with gr.Blocks(css=css) as demo:
     gr.HTML(
