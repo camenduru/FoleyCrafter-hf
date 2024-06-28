@@ -64,7 +64,7 @@ class FoleyController:
         self.savedir_sample = os.path.join(self.savedir, "sample")
         os.makedirs(self.savedir, exist_ok=True)
 
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda"
 
         self.pipeline = None
 
