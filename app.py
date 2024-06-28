@@ -284,4 +284,4 @@ with gr.Blocks(css=css, analytics_enabled=False) as demo:
             
     # demo.queue(10)
     # demo.launch(server_name=args.server_name, server_port=args.port, share=args.share, allowed_paths=["./foleycrafter.png"])
-    app.queue().launch(share=True)
+    demo.queue().launch(share=True)
