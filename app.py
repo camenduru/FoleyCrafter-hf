@@ -147,8 +147,8 @@ class FoleyController:
             torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ]
         video_transform = torchvision.transforms.Compose(vision_transform_list)
-        if not self.loaded:
-            raise gr.Error("Error with loading model")
+        # if not self.loaded:
+        #     raise gr.Error("Error with loading model")
         generator  = torch.Generator()
         if seed_textbox != "":
             torch.manual_seed(int(seed_textbox))
