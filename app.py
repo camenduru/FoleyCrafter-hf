@@ -120,8 +120,6 @@ class FoleyController:
 
         self.pipeline.load_ip_adapter(fc_ckpt, subfolder='semantic', weight_name='semantic_adapter.bin', image_encoder_folder=None)
 
-        self.move_to_device()
-
         gr.Info("Load Finish!")
         print("Load Finish!")
         self.loaded = True
