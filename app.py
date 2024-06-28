@@ -3,6 +3,7 @@ import torchvision
 
 import os
 import os.path as osp
+import spaces
 import random
 from argparse import ArgumentParser
 from datetime import datetime
@@ -125,6 +126,7 @@ class FoleyController:
 
         return "Load"
 
+    @spaces.GPU
     def foley(
         self,
         input_video,
